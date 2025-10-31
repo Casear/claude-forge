@@ -1,0 +1,65 @@
+[package]
+name = "claude-forge"
+version = "0.1.0"
+edition = "2021"
+authors = ["Casear"]
+description = "A CLI tool for managing Claude Code configurations and templates"
+license = "MIT"
+repository = "https://github.com/Casear/claude-forge"
+readme = "README.md"
+keywords = ["cli", "claude", "ai", "development", "template"]
+categories = ["command-line-utilities", "development-tools"]
+
+[[bin]]
+name = "claude-forge"
+path = "src/main.rs"
+
+[dependencies]
+# CLI framework
+clap = { version = "4.5", features = ["derive", "cargo", "env"] }
+console = "0.15"
+indicatif = "0.17"
+dialoguer = "0.11"
+
+# Async runtime
+tokio = { version = "1.35", features = ["full"] }
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+toml = "0.8"
+
+# Templates
+tera = "1.19"
+include_dir = "0.7"
+
+# File operations
+walkdir = "2.4"
+ignore = "0.4"
+
+# HTTP client
+reqwest = { version = "0.11", features = ["json"] }
+
+# Error handling
+anyhow = "1.0"
+thiserror = "1.0"
+
+# System utilities
+which = "6.0"
+dirs = "5.0"
+
+# String utilities
+regex = "1.10"
+colored = "2.1"
+
+[dev-dependencies]
+assert_cmd = "2.0"
+predicates = "3.0"
+tempfile = "3.8"
+tokio-test = "0.4"
+
+[profile.release]
+lto = true
+codegen-units = 1
+strip = true
+opt-level = "z"

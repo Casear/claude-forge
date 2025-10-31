@@ -1,0 +1,57 @@
+# TypeScript Project Memory
+
+## Build & Development Commands
+
+- **Build**: `npm run build` or `pnpm build` or `yarn build`
+- **Test**: `npm test`
+- **Lint**: `eslint . --fix`
+- **Type Check**: `tsc --noEmit`
+- **Dev Server**: `npm run dev`
+
+## Code Style Guidelines
+
+### General
+- Use **2 spaces** for indentation
+- Use **ESLint** + **Prettier** for formatting
+- Follow **TypeScript strict mode**
+- Prefer `const` over `let`, avoid `var`
+
+### TypeScript Specifics
+- Always use type annotations for function parameters and return types
+- Use interfaces for object shapes, types for unions/intersections
+- Prefer `unknown` over `any`
+- Use utility types: `Partial<T>`, `Pick<T>`, `Omit<T>`, etc.
+
+### Naming Conventions
+- **PascalCase**: Classes, Interfaces, Types, React Components
+- **camelCase**: Variables, functions, methods
+- **UPPER_SNAKE_CASE**: Constants
+
+## 🚫 CLI Tool Usage (When Using Bash)
+
+**IMPORTANT**: Claude Code has built-in tools (Grep, Glob, Read) that are already optimized.
+The rules below apply ONLY when Claude needs to use the Bash tool directly.
+
+When using the Bash tool for operations:
+
+**Directory Listing:**
+- ✅ ALWAYS: `eza -la --icons --git`
+- ❌ NEVER: `ls -la` or `ls`
+
+**Disk Usage:**
+- ✅ ALWAYS: `dust -d 2`
+- ❌ NEVER: `du -sh` or `du`
+
+**File Viewing (for display purposes):**
+- ✅ ALWAYS: `bat filename`
+- ❌ NEVER: `cat filename`
+
+**File Search (if not using Glob tool):**
+- ✅ ALWAYS: `fd pattern`
+- ❌ NEVER: `find . -name pattern`
+
+**Text Search (if not using Grep tool):**
+- ✅ ALWAYS: `rg pattern`
+- ❌ NEVER: `grep pattern`
+
+For complete modern CLI tools reference: @../steering.md

@@ -5,6 +5,9 @@ on:
     tags:
       - '[0-9]+.[0-9]+.[0-9]+'  # 匹配 1.0.0 格式的 tag
 
+permissions:
+  contents: write
+
 env:
   CARGO_TERM_COLOR: always
 
@@ -13,54 +16,53 @@ jobs:
     name: Create Release
     runs-on: ubuntu-latest
     outputs:
-      upload_url: ${{ steps.create_release.outputs.upload_url }}
       version: ${{ steps.get_version.outputs.version }}
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Get version from tag
         id: get_version
         run: echo "version=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
 
       - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ steps.get_version.outputs.version }}
-          release_name: Claude Forge v${{ steps.get_version.outputs.version }}
-          body: |
-            ## 🎉 Claude Forge v${{ steps.get_version.outputs.version }}
+        run: |
+          gh release create ${{ steps.get_version.outputs.version }} \
+            --title "Claude Forge v${{ steps.get_version.outputs.version }}" \
+            --notes "## 🎉 Claude Forge v${{ steps.get_version.outputs.version }}
 
-            ### 📥 Installation
+          ### 📥 Installation
 
-            #### macOS (Apple Silicon)
-            ```bash
-            curl -L https://github.com/${{ github.repository }}/releases/download/${{ steps.get_version.outputs.version }}/claude-forge-aarch64-apple-darwin.tar.gz | tar xz
-            sudo mv claude-forge /usr/local/bin/
-            ```
+          #### macOS (Apple Silicon)
+          \`\`\`bash
+          curl -L https://github.com/${{ github.repository }}/releases/download/${{ steps.get_version.outputs.version }}/claude-forge-aarch64-apple-darwin.tar.gz | tar xz
+          sudo mv claude-forge /usr/local/bin/
+          \`\`\`
 
-            #### macOS (Intel)
-            ```bash
-            curl -L https://github.com/${{ github.repository }}/releases/download/${{ steps.get_version.outputs.version }}/claude-forge-x86_64-apple-darwin.tar.gz | tar xz
-            sudo mv claude-forge /usr/local/bin/
-            ```
+          #### macOS (Intel)
+          \`\`\`bash
+          curl -L https://github.com/${{ github.repository }}/releases/download/${{ steps.get_version.outputs.version }}/claude-forge-x86_64-apple-darwin.tar.gz | tar xz
+          sudo mv claude-forge /usr/local/bin/
+          \`\`\`
 
-            #### Linux (x86_64)
-            ```bash
-            curl -L https://github.com/${{ github.repository }}/releases/download/${{ steps.get_version.outputs.version }}/claude-forge-x86_64-unknown-linux-gnu.tar.gz | tar xz
-            sudo mv claude-forge /usr/local/bin/
-            ```
+          #### Linux (x86_64)
+          \`\`\`bash
+          curl -L https://github.com/${{ github.repository }}/releases/download/${{ steps.get_version.outputs.version }}/claude-forge-x86_64-unknown-linux-gnu.tar.gz | tar xz
+          sudo mv claude-forge /usr/local/bin/
+          \`\`\`
 
-            ### ✨ What's New
+          ### ✨ What's New
 
-            See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) for details.
+          See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) for details.
 
-            ### 📚 Documentation
+          ### 📚 Documentation
 
-            - [Quick Start Guide](https://github.com/${{ github.repository }}/blob/main/QUICK_START.md)
-            - [README](https://github.com/${{ github.repository }}/blob/main/README.md)
-          draft: false
-          prerelease: false
+          - [Quick Start Guide](https://github.com/${{ github.repository }}/blob/main/QUICK_START.md)
+          - [README](https://github.com/${{ github.repository }}/blob/main/README.md)" \
+            --draft=false \
+            --prerelease=false
 
   build-release:
     name: Build Release
@@ -123,14 +125,11 @@ jobs:
           mv claude-forge-${{ matrix.target }}.tar.gz ${{ github.workspace }}/
 
       - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_path: ./claude-forge-${{ matrix.target }}.tar.gz
-          asset_name: claude-forge-${{ matrix.target }}.tar.gz
-          asset_content_type: application/gzip
+        run: |
+          gh release upload ${{ needs.create-release.outputs.version }} \
+            ./claude-forge-${{ matrix.target }}.tar.gz
 
   publish-crates:
     name: Publish to crates.io

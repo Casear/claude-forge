@@ -1,0 +1,26 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "command": ".claude/hooks/prettier-format.sh"
+      },
+      {
+        "matcher": "Edit|Write",
+        "command": "../../../core/hooks/security-check.sh"
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "command": ".claude/hooks/eslint-check.sh"
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "*",
+        "command": "../../../core/hooks/session-init.sh"
+      }
+    ]
+  }
+}

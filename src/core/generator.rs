@@ -1,7 +1,7 @@
 use anyhow::{Context, Result};
 use std::path::Path;
 
-use super::Language;
+use super::{Language, tools_detector::ToolsDetector};
 use crate::templates::registry::TemplateRegistry;
 use crate::utils::fs::write_file;
 
@@ -48,7 +48,39 @@ impl ConfigGenerator {
     }
 
     fn generate_claude_md(&self, claude_dir: &Path) -> Result<()> {
-        let content = self.registry.get_language_claude_md(self.language)?;
+        // 獲取語言特定的模板
+        let mut content = self.registry.get_language_claude_md(self.language)?;
+
+        // 檢測已安裝的工具並生成智能的工具使用說明
+        let tools_detector = ToolsDetector::new();
+        if let Ok(installed_tools) = tools_detector.detect() {
+            let tools_section = tools_detector.generate_tools_section(&installed_tools);
+
+            // 如果模板中已經有 CLI Tool Usage 部分，替換它
+            if content.contains("## 🚫 CLI Tool Usage") {
+                // 找到該部分並替換
+                if let Some(start) = content.find("## 🚫 CLI Tool Usage") {
+                    // 找到下一個 ## 標題或文件結尾
+                    let after_section = &content[start..];
+                    if let Some(next_section) = after_section[1..].find("\n## ") {
+                        let end = start + next_section + 1;
+                        content.replace_range(start..end, &tools_section);
+                    } else {
+                        // 這是最後一個部分
+                        content.replace_range(start.., &tools_section);
+                    }
+                }
+            } else {
+                // 如果沒有，添加到最後
+                content.push_str("\n");
+                content.push_str(&tools_section);
+            }
+
+            // 添加工具狀態摘要到文件頂部
+            let status = tools_detector.generate_tools_status(&installed_tools);
+            content = format!("<!-- {} -->\n\n{}", status, content);
+        }
+
         let file_path = claude_dir.join("CLAUDE.md");
         write_file(&file_path, &content)?;
         Ok(())

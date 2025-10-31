@@ -1,0 +1,72 @@
+# Project Memory
+
+## 🚫 CLI Tool Usage (When Using Bash)
+
+**IMPORTANT**: Claude Code has built-in tools (Grep, Glob, Read) that are already optimized.
+The rules below apply ONLY when Claude needs to use the Bash tool directly.
+
+When using the Bash tool for operations:
+
+**Directory Listing:**
+- ✅ ALWAYS: `eza -la --icons --git`
+- ❌ NEVER: `ls -la` or `ls`
+
+**Disk Usage:**
+- ✅ ALWAYS: `dust -d 2`
+- ❌ NEVER: `du -sh` or `du`
+
+**File Viewing (for display purposes):**
+- ✅ ALWAYS: `bat filename`
+- ❌ NEVER: `cat filename`
+
+**File Search (if not using Glob tool):**
+- ✅ ALWAYS: `fd pattern`
+- ❌ NEVER: `find . -name pattern`
+
+**Text Search (if not using Grep tool):**
+- ✅ ALWAYS: `rg pattern`
+- ❌ NEVER: `grep pattern`
+
+For complete modern CLI tools reference: @../steering.md
+
+## Build & Development Commands
+
+<!-- Language-specific commands will be added here -->
+- Build: [TO_BE_CONFIGURED]
+- Test: [TO_BE_CONFIGURED]
+- Lint: [TO_BE_CONFIGURED]
+
+## Code Style Guidelines
+
+<!-- Project-specific style guidelines -->
+- Follow language conventions
+- Use consistent naming
+- Keep functions small and focused
+- Write self-documenting code
+
+## Project Architecture
+
+<!-- Describe your project structure -->
+- Main source: src/
+- Tests: tests/ or __tests__/
+- Configuration: config/
+
+## SDD Workflow
+
+This project uses Spec-Driven Development (SDD) workflow:
+- Use `/kiro:*` commands for structured development
+- Follow Requirements → Design → Tasks → Implementation
+- Keep diffs small (< 200 lines per change)
+- Always write tests for new features
+
+## Development Workflow
+
+1. Start with SDD: `/kiro:spec-init "feature name"`
+2. Let code be reviewed by code-reviewer agent
+3. Run tests before committing
+4. Keep commits atomic and well-described
+
+## Important Notes
+
+<!-- Add project-specific important information -->
+- [Add your project-specific guidelines here]

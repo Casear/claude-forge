@@ -1,6 +1,7 @@
 pub mod detector;
 pub mod generator;
 pub mod validator;
+pub mod tools_detector;
 
 use anyhow::{anyhow, Result};
 

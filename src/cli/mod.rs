@@ -3,6 +3,8 @@ mod add;
 mod tools;
 mod mcp;
 mod config;
+mod upgrade;
+mod update;
 
 use anyhow::Result;
 use clap::{Parser, Subcommand};
@@ -13,6 +15,8 @@ pub use add::AddCommand;
 pub use tools::ToolsCommand;
 pub use mcp::McpCommand;
 pub use config::ConfigCommand;
+pub use upgrade::UpgradeCommand;
+pub use update::UpdateCommand;
 
 /// Claude Forge - A CLI tool for managing Claude Code configurations
 #[derive(Parser)]
@@ -52,6 +56,14 @@ enum Commands {
     /// Configuration management
     #[command(alias = "c")]
     Config(ConfigCommand),
+
+    /// Upgrade claude-forge to latest version
+    #[command(alias = "up")]
+    Upgrade(UpgradeCommand),
+
+    /// Update templates to latest version
+    #[command(alias = "upd")]
+    Update(UpdateCommand),
 }
 
 impl Cli {
@@ -71,6 +83,8 @@ impl Cli {
             Commands::Tools(cmd) => cmd.execute().await,
             Commands::Mcp(cmd) => cmd.execute().await,
             Commands::Config(cmd) => cmd.execute().await,
+            Commands::Upgrade(cmd) => cmd.execute().await,
+            Commands::Update(cmd) => cmd.execute().await,
         }
     }
 

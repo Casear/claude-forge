@@ -1,7 +1,7 @@
 use anyhow::{Context, Result};
 use clap::{Args, Subcommand};
 use colored::Colorize;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use crate::templates::registry::TemplateRegistry;
 use crate::utils::fs::ensure_directory;
@@ -65,19 +65,19 @@ enum Component {
 impl AddCommand {
     pub async fn execute(self) -> Result<()> {
         match self.component {
-            Component::Agent { name, template, edit } => {
-                self.add_agent(&name, template.as_deref(), edit).await
+            Component::Agent { ref name, ref template, edit } => {
+                self.add_agent(name, template.as_deref(), edit).await
             }
-            Component::Command { name, template, edit } => {
-                self.add_command(&name, template.as_deref(), edit).await
+            Component::Command { ref name, ref template, edit } => {
+                self.add_command(name, template.as_deref(), edit).await
             }
-            Component::Hook { name, event, template, edit } => {
-                self.add_hook(&name, event.as_deref(), template.as_deref(), edit).await
+            Component::Hook { ref name, ref event, ref template, edit } => {
+                self.add_hook(name, event.as_deref(), template.as_deref(), edit).await
             }
         }
     }
 
-    async fn add_agent(&self, name: &str, template: Option<&PathBuf>, edit: bool) -> Result<()> {
+    async fn add_agent(&self, name: &str, template: Option<&Path>, edit: bool) -> Result<()> {
         println!("{}", format!("🤖 Adding agent: {}", name).bright_blue());
 
         let claude_dir = PathBuf::from(".claude");
@@ -116,7 +116,7 @@ impl AddCommand {
         Ok(())
     }
 
-    async fn add_command(&self, name: &str, template: Option<&PathBuf>, edit: bool) -> Result<()> {
+    async fn add_command(&self, name: &str, template: Option<&Path>, edit: bool) -> Result<()> {
         println!("{}", format!("⚡ Adding command: {}", name).bright_blue());
 
         let claude_dir = PathBuf::from(".claude");
@@ -155,7 +155,7 @@ impl AddCommand {
         Ok(())
     }
 
-    async fn add_hook(&self, name: &str, event: Option<&str>, template: Option<&PathBuf>, edit: bool) -> Result<()> {
+    async fn add_hook(&self, name: &str, event: Option<&str>, template: Option<&Path>, edit: bool) -> Result<()> {
         println!("{}", format!("🪝 Adding hook: {}", name).bright_blue());
 
         let claude_dir = PathBuf::from(".claude");

@@ -38,7 +38,7 @@ impl ConfigCommand {
             ConfigAction::Validate => self.validate_config().await,
             ConfigAction::Show => self.show_config().await,
             ConfigAction::Reset { force } => self.reset_config(force).await,
-            ConfigAction::Export { output } => self.export_config(&output).await,
+            ConfigAction::Export { ref output } => self.export_config(output).await,
         }
     }
 
@@ -50,13 +50,13 @@ impl ConfigCommand {
             anyhow::bail!("No .claude directory found. Run 'claude-forge init' first.");
         }
 
-        let mut errors = Vec::new();
-        let mut warnings = Vec::new();
+        let mut errors: Vec<String> = Vec::new();
+        let mut warnings: Vec<String> = Vec::new();
 
         // Check CLAUDE.md
         let claude_md = claude_dir.join("CLAUDE.md");
         if !claude_md.exists() {
-            errors.push("CLAUDE.md not found");
+            errors.push("CLAUDE.md not found".to_string());
         }
 
         // Check config.json
@@ -65,14 +65,14 @@ impl ConfigCommand {
             match std::fs::read_to_string(&config_json) {
                 Ok(content) => {
                     if let Err(e) = serde_json::from_str::<serde_json::Value>(&content) {
-                        errors.push("config.json is not valid JSON");
-                        warnings.push(format!("JSON error: {}", e).as_str());
+                        errors.push("config.json is not valid JSON".to_string());
+                        warnings.push(format!("JSON error: {}", e));
                     }
                 }
-                Err(_) => errors.push("Cannot read config.json"),
+                Err(_) => errors.push("Cannot read config.json".to_string()),
             }
         } else {
-            warnings.push("config.json not found (optional)");
+            warnings.push("config.json not found (optional)".to_string());
         }
 
         // Check agents directory
@@ -101,14 +101,14 @@ impl ConfigCommand {
 
         if !errors.is_empty() {
             println!("{}", "❌ Errors:".red().bold());
-            for error in errors {
+            for error in &errors {
                 println!("  • {}", error.red());
             }
         }
 
         if !warnings.is_empty() {
             println!("{}", "⚠ Warnings:".yellow().bold());
-            for warning in warnings {
+            for warning in &warnings {
                 println!("  • {}", warning.yellow());
             }
         }

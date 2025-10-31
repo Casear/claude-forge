@@ -52,17 +52,17 @@ enum McpAction {
 impl McpCommand {
     pub async fn execute(self) -> Result<()> {
         match self.action {
-            McpAction::Add { server, args, env } => {
-                self.add_server(&server, args, env).await
+            McpAction::Add { ref server, ref args, ref env } => {
+                self.add_server(server, args.clone(), env.clone()).await
             }
             McpAction::List { installed } => {
                 self.list_servers(installed).await
             }
-            McpAction::Search { query } => {
-                self.search_servers(&query).await
+            McpAction::Search { ref query } => {
+                self.search_servers(query).await
             }
-            McpAction::Remove { server } => {
-                self.remove_server(&server).await
+            McpAction::Remove { ref server } => {
+                self.remove_server(server).await
             }
             McpAction::Show => {
                 self.show_config().await

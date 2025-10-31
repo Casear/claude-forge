@@ -1,4 +1,4 @@
-use anyhow::{Context, Result};
+use anyhow::Result;
 
 use crate::core::Language;
 
@@ -182,7 +182,7 @@ Provide feedback in this format:
 
 **Approval:**
 - ✅ Approved / ⚠️ Needs changes / ❌ Major issues
-"#,
+"#.to_string(),
             "security-scanner" => r#"---
 name: security-scanner
 description: Scans code for security vulnerabilities
@@ -210,22 +210,22 @@ You are a security specialist. Your role is to identify security vulnerabilities
 - XSS vulnerabilities
 - Insecure dependencies
 - Missing input validation
-"#,
-            _ => r#"---
-name: {name}
+"#.to_string(),
+            _ => format!(r#"---
+name: {}
 description: Custom agent
 tools:
   - Read
   - Grep
 ---
 
-# {name}
+# {}
 
 Describe the agent's purpose and capabilities here.
-"#.replace("{name}", name),
+"#, name, name),
         };
 
-        Ok(template.to_string())
+        Ok(template)
     }
 
     pub fn get_default_command_template(&self, name: &str) -> Result<String> {
@@ -241,7 +241,7 @@ Analyze the codebase and provide insights on:
 2. Code complexity
 3. Dependencies
 4. Potential improvements
-"#,
+"#.to_string(),
             "refactor" => r#"---
 description: Suggest refactoring opportunities
 allowed-tools: Read,Grep,Glob
@@ -253,17 +253,17 @@ Identify and suggest refactoring opportunities:
 2. Long functions
 3. Complex conditionals
 4. Naming improvements
-"#,
+"#.to_string(),
             _ => r#"---
 description: Custom command
 allowed-tools: Read,Grep
 ---
 
 Describe what this command does.
-"#,
+"#.to_string(),
         };
 
-        Ok(template.to_string())
+        Ok(template)
     }
 
     pub fn get_default_hook_template(&self, name: &str, _event: Option<&str>) -> Result<String> {
@@ -283,7 +283,7 @@ if [ -n "$file_path" ]; then
 fi
 
 exit 0
-"#,
+"#.to_string(),
             "lint" | "eslint-check" => r#"#!/bin/bash
 set -euo pipefail
 
@@ -299,7 +299,7 @@ if [ -n "$file_path" ]; then
 fi
 
 exit 0
-"#,
+"#.to_string(),
             _ => r#"#!/bin/bash
 set -euo pipefail
 
@@ -310,10 +310,9 @@ input=$(cat)
 echo "$input" | jq .
 
 exit 0
-"#,
+"#.to_string(),
         };
 
-        Ok(template.to_string())
+        Ok(template)
     }
 }
-"#

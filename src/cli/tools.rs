@@ -42,19 +42,19 @@ enum ToolsAction {
 impl ToolsCommand {
     pub async fn execute(self) -> Result<()> {
         match self.action {
-            ToolsAction::Install { skip, dry_run } => {
+            ToolsAction::Install { ref skip, dry_run } => {
                 self.install_tools(skip, dry_run).await
             }
             ToolsAction::Check { verbose } => {
                 self.check_tools(verbose).await
             }
-            ToolsAction::Update { skip } => {
+            ToolsAction::Update { ref skip } => {
                 self.update_tools(skip).await
             }
         }
     }
 
-    async fn install_tools(&self, skip: Vec<String>, dry_run: bool) -> Result<()> {
+    async fn install_tools(&self, skip: &[String], dry_run: bool) -> Result<()> {
         println!("{}", "📦 Installing modern CLI tools...\n".bright_blue());
 
         if dry_run {
@@ -82,10 +82,9 @@ impl ToolsCommand {
 
         for (tool, installed) in &results {
             let status = if *installed {
-                "✓".green()
+                "✓".green().to_string()
             } else {
-                "✗".red()
-                .to_string()
+                "✗".red().to_string()
             };
 
             print!("{} {} ", status, tool.bright_yellow());
@@ -113,7 +112,7 @@ impl ToolsCommand {
         Ok(())
     }
 
-    async fn update_tools(&self, skip: Vec<String>) -> Result<()> {
+    async fn update_tools(&self, skip: &[String]) -> Result<()> {
         println!("{}", "🔄 Updating modern CLI tools...\n".bright_blue());
 
         let installer = ToolsInstaller::new();
